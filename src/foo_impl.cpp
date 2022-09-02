@@ -1,3 +1,4 @@
+#include <iostream>
 #include <foo.h>
 
 struct Foo : public IFoo {

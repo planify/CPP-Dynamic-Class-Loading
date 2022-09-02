@@ -1,74 +1,43 @@
 #pragma once
 
-#include <memory>
-#include <string>
 #include <dlfcn.h>
-#include <iostream>
-#include <utility>
+#include <memory>
+#include <stdexcept>
 
 template<class T>
 class DLClass {
-  class shared_obj {
-    bool handle_dlerror(bool close_on_error) {
-      if (close_on_error) close_module();
-
-      std::cerr << dlerror() << std::endl;
-
-      return false;
-    }
-
-  public:
+  struct dlmanage {
     typename T::create_t *create{};
 
     typename T::destroy_t *destroy{};
 
-    void *dll_handle{};
+    void *handle{};
 
-    ~shared_obj() {
-      close_module();
+    explicit dlmanage(const std::string &module_name) {
+      handle = dlopen(module_name.c_str(), RTLD_LAZY | RTLD_NOW);
+      if (handle == nullptr) throw std::runtime_error{dlerror()};
+
+      create = (typename T::create_t *) dlsym(handle, "create");
+      if (create == nullptr) throw std::runtime_error{dlerror()};
+
+      destroy = (typename T::destroy_t *) dlsym(handle, "destroy");
+      if (destroy == nullptr) throw std::runtime_error{dlerror()};
     }
 
-    bool open_module(const std::string &module_name) {
-      dll_handle = dlopen(module_name.c_str(), RTLD_LAZY);
-      if (!dll_handle) return handle_dlerror(false);
-
-      create = (typename T::create_t *) dlsym(dll_handle, "create");
-      if (!create) return handle_dlerror(true);
-
-      destroy = (typename T::destroy_t *) dlsym(dll_handle, "destroy");
-      if (!destroy) return handle_dlerror(true);
-
-      return true;
-    }
-
-    void close_module() {
-      if (dll_handle)
-        dlclose(dll_handle);
-
-      create = nullptr;
-      destroy = nullptr;
-      dll_handle = nullptr;
+    ~dlmanage() {
+      dlclose(handle);
     }
   };
 
-  std::string module;
-  std::shared_ptr<shared_obj> shared;
+  std::string path;
+  std::shared_ptr<dlmanage> shared;
 public:
-  explicit DLClass(std::string module_name) : module(std::move(module_name)) {
-    shared = std::make_shared<shared_obj>();
-  }
-
-  ~DLClass() = default;
+  [[maybe_unused]] explicit DLClass(std::string path) : path(std::move(path)) {}
 
   template<typename... Args>
-  [[maybe_unused]] std::shared_ptr<T> make_obj(Args... args) {
-    if ((!shared->create || !shared->destroy) && !shared->open_module(module))
-      return std::shared_ptr<T>(NULL);
-
-    std::shared_ptr<shared_obj> my_shared = shared;
-
-    return std::shared_ptr<T>(shared->create(args...), [my_shared](T *p) {
-      my_shared->destroy(p);
-    });
+  [[maybe_unused]]
+  std::shared_ptr<T> make_obj(Args... args) {
+    if (shared == nullptr) shared = std::make_shared<dlmanage>(this->path);
+    return std::shared_ptr<T>(shared->create(args...), [&](T *p) { shared->destroy(p); });
   }
 };
