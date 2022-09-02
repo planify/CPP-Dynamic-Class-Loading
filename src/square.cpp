@@ -1,21 +1,13 @@
-#include "polygon.hpp"
-#include <cmath>
+#include <polygon.h>
 
-class Square : public Polygon {
-public:
-    Square(int x) : Polygon(x) {}
-    virtual double area() const {
-        return side_length_ * side_length_;
-    }
+struct Square : public Polygon {
+  explicit Square(int x) : Polygon(x) {}
+
+  [[nodiscard]] double area() const override {
+    return side_length_ * side_length_;
+  }
 };
 
+extern "C" [[maybe_unused]] Polygon *create(int x) { return new Square(x); }
 
-// the class factories
-
-extern "C" Polygon* create(int x) {
-    return new Square(x);
-}
-
-extern "C" void destroy(Polygon* p) {
-    delete p;
-}
+extern "C" [[maybe_unused]] void destroy(Polygon *p) { delete p; }

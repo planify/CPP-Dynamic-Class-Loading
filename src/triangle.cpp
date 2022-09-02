@@ -1,21 +1,17 @@
-#include "polygon.hpp"
 #include <cmath>
 
-class Triangle : public Polygon {
-public:
-    Triangle(int x) : Polygon(x) {}
-    virtual double area() const {
-        return side_length_ * side_length_ * sqrt(3) / 2;
-    }
+#include <polygon.h>
+
+struct Triangle : public Polygon {
+  explicit Triangle(int x);
+
+  [[nodiscard]] double area() const override;
 };
 
+Triangle::Triangle(int x) : Polygon(x) {}
 
-// the class factories
+double Triangle::area() const { return side_length_ * side_length_ * sqrt(3) / 2; }
 
-extern "C" Polygon* create(int x) {
-    return new Triangle(x);
-}
+extern "C" [[maybe_unused]] Polygon *create(int x) { return new Triangle(x); }
 
-extern "C" void destroy(Polygon* p) {
-    delete p;
-}
+extern "C" [[maybe_unused]] void destroy(Polygon *p) { delete p; }
