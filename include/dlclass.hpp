@@ -1,5 +1,4 @@
-#ifndef DLCLASS_H
-#define DLCLASS_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -15,7 +14,7 @@ public:
 
     template <typename... Args>
     std::shared_ptr<T> make_obj(Args... args);
-    
+
 private:
     struct shared_obj {
         typename T::create_t *create = NULL;
@@ -32,5 +31,3 @@ private:
 };
 
 #include "dlclass.cpp"
-
-#endif

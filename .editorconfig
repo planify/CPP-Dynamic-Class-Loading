@@ -1,0 +1,20 @@
+root = true
+
+[*]
+
+# File Encoding
+charset = utf-8
+
+# End of Line
+end_of_line = lf
+insert_final_newline = true
+max_line_length = 120
+trim_trailing_whitespace = true
+
+# Indentation
+indent_size = 2
+indent_style = space
+tab_width = 2
+
+# IntelliJ IDEs
+ij_visual_guides = 120

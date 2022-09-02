@@ -22,7 +22,7 @@ void DLClass<T>::shared_obj::close_module() {
 
 template <class T>
 bool DLClass<T>::shared_obj::open_module(std::string module) {
-    
+
     dll_handle = dlopen(module.c_str(), RTLD_LAZY);
 
     if(!dll_handle) {
@@ -40,7 +40,7 @@ bool DLClass<T>::shared_obj::open_module(std::string module) {
         close_module();
         return false;
     }
-    
+
     destroy = (typename T::destroy_t*) dlsym(dll_handle, "destroy");
     err = dlerror();
     if(err) {
@@ -60,7 +60,7 @@ std::shared_ptr<T> DLClass<T>::make_obj(Args... args) {
         }
     }
 
-//    auto create_args = ((T* (*)(Args...))create);    
+//    auto create_args = ((T* (*)(Args...))create);
     std::shared_ptr<shared_obj> my_shared = shared;
     return std::shared_ptr<T>(shared->create(args...),
                               [my_shared](T* p){ my_shared->destroy(p); });
