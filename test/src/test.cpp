@@ -33,7 +33,7 @@ static void error_test() try {
 #ifdef WIN32
   assert(message == "The specified module could not be found.\r\n");
 #else
-  assert(message == "TODO: linux error message");
+  assert(message == "404.dll: cannot open shared object file: No such file or directory");
 #endif
 
 }
