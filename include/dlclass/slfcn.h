@@ -33,6 +33,10 @@ namespace DLClass {
 
 static SL_HANDLE DLClass::slopen(const string &path) {
 #ifdef _DLFCN_H
+  // Clear any existing errors from previous calls.
+  slerror();
+
+  // Open the library.
   return dlopen(path.c_str(), RTLD_LAZY);
 #elif defined(WIN32)
   return LoadLibraryA(path.c_str());
@@ -41,6 +45,10 @@ static SL_HANDLE DLClass::slopen(const string &path) {
 
 static void DLClass::slclose(SL_HANDLE handle) {
 #ifdef _DLFCN_H
+  // Clear any existing errors from previous calls.
+  slerror();
+
+  // Close the library.
   dlclose(handle);
 #elif defined(WIN32)
   FreeLibrary(handle);
@@ -50,6 +58,10 @@ static void DLClass::slclose(SL_HANDLE handle) {
 template<typename T>
 static T DLClass::slsym(SL_HANDLE handle, const string &name) {
 #ifdef _DLFCN_H
+  // Clear any existing errors from previous calls.
+  slerror();
+
+  // Find the symbol and cast it to the given type.
   return reinterpret_cast<T>(dlsym(handle, name.c_str()));
 #elif defined(WIN32)
   return reinterpret_cast<T>(GetProcAddress(handle, name.c_str()));

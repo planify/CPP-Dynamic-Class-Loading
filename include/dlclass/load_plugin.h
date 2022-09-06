@@ -13,11 +13,6 @@ namespace DLClass {
 
 template<typename T, typename ...A>
 static std::shared_ptr<T> DLClass::load_plugin(const std::string &path, A... args) {
-#ifndef WIN32
-  // Clear any existing errors from previous calls.
-  slerror();
-#endif
-
   // Load the library, resolving symbols only as they are executed by the code.
   auto slhandle = slopen(path);
 
