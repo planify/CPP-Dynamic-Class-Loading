@@ -6,6 +6,7 @@
 
 # ifndef SL_HANDLE
 #   ifdef WIN32
+#     include <minwindef.h>
 #     define SL_HANDLE HMODULE
 #   else
 #     define SL_HANDLE void *
