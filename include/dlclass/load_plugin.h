@@ -18,8 +18,8 @@
 template<typename T, typename ...A>
 static std::shared_ptr<T> load_plugin(const std::string &path, A... args) {
 
-  // Provide a minimal implementation of dlfcn when not provided by the program using the library.
-# if defined(WIN32) and not defined(_DLFCN_H)
+# if defined(WIN32) and not defined(_DLFCN_H) //\
+#   Provide a minimal implementation of dlfcn when not provided by the program using the library.
 #   define RTLD_LAZY 0x00001
 #   define dlopen(path, mode) (LoadLibraryA(path))
 #   define dlclose(handle) (FreeLibrary(reinterpret_cast<HMODULE>(handle)))
@@ -29,7 +29,7 @@ static std::shared_ptr<T> load_plugin(const std::string &path, A... args) {
   dlerror();
 # endif
 
-  // Load the library, resolving symbols only as their executed by the code.
+  // Load the library, resolving symbols only as they are executed by the code.
   auto dlhandle = dlopen(path.c_str(), RTLD_LAZY);
 
   // Throws an exception if a dlfcn function returns an unexpected NULL value.
