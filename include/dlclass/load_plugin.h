@@ -6,20 +6,9 @@
 #include <memory>
 #include <stdexcept>
 
-# ifdef WIN32
-#   include <windef.h>
-#   include <errhandlingapi.h>
-#   include <libloaderapi.h>
-#   include <winbase.h>
-# else
-#   include <dlfcn.h>
-# endif
-
-# ifdef WIN32
-#   define SL_HANDLE HMODULE
-# else
-#   define SL_HANDLE void *
-# endif
+#ifndef WIN32
+#include <dlfcn.h>
+#endif
 
 namespace DLClass {
   template<typename T, typename ...A>
