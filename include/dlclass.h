@@ -4,10 +4,12 @@
 #include <memory>
 #include <string>
 
-# ifdef WIN32
-#   define SL_HANDLE HMODULE
-# else
-#   define SL_HANDLE void *
+# ifndef SL_HANDLE
+#   ifdef WIN32
+#     define SL_HANDLE HMODULE
+#   else
+#     define SL_HANDLE void *
+#   endif
 # endif
 
 namespace DLClass {
