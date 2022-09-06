@@ -1,6 +1,8 @@
 #ifndef DLCLASS_SLFCN_H
 #define DLCLASS_SLFCN_H
 
+#include <string>
+
 # if defined(WIN32) and not defined(_DLFCN_H) and not defined(DLFCN_H)
 #   include <windef.h>
 #   include <errhandlingapi.h>
@@ -10,26 +12,7 @@
 #   include <dlfcn.h>
 # endif
 
-# ifdef WIN32
-#   define SL_HANDLE HMODULE
-# else
-#   define SL_HANDLE void *
-# endif
-
-#include <string>
-
 using std::string;
-
-namespace DLClass {
-  static const char *slerror();
-
-  static SL_HANDLE slopen(const string &path);
-
-  static void slclose(SL_HANDLE handle);
-
-  template<typename T>
-  static T slsym(SL_HANDLE handle, const string &name);
-}
 
 static SL_HANDLE DLClass::slopen(const string &path) {
 #if defined(DLFCN_H) or defined (_DLFCN_H)

@@ -1,15 +1,11 @@
 #ifndef DLCLASS_LOAD_PLUGIN_H
 #define DLCLASS_LOAD_PLUGIN_H
 
-#include <dlclass/slfcn.h>
-
 #include <memory>
 #include <stdexcept>
 
-namespace DLClass {
-  template<typename T, typename ...A>
-  static std::shared_ptr<T> load_plugin(const std::string &path, A... args);
-}
+#include <dlclass.h>
+#include <dlclass/slfcn.h>
 
 template<typename T, typename ...A>
 static std::shared_ptr<T> DLClass::load_plugin(const std::string &path, A... args) {
