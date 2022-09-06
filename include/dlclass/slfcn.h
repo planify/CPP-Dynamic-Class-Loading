@@ -52,7 +52,7 @@ static T DLClass::slsym(SL_HANDLE handle, const string &name) {
 #ifdef _DLFCN_H
   return reinterpret_cast<T>(dlsym(handle, name.c_str()));
 #elif defined(WIN32)
-  return GetProcAddress(handle, name.c_str());
+  return reinterpret_cast<T>(GetProcAddress(handle, name.c_str()));
 #endif
 }
 
