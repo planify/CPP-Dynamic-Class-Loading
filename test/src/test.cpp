@@ -2,20 +2,20 @@
 #include <cstdlib>
 
 #include <dlclass/load_plugin.h>
-#include <dlclass/test/example.h>
+#include <example.h>
 
 # if WIN32
 #   ifdef MSVC
-#     define EXAMPLE_LIB_PATH "./dlclass_example.dll"
+#     define EXAMPLE_LIB_PATH "./example.dll"
 #   else
-#     define EXAMPLE_LIB_PATH "./libdlclass_example.dll"
+#     define EXAMPLE_LIB_PATH "./libexample.dll"
 #   endif
 # else
-#   define EXAMPLE_LIB_PATH "./libdlclass_example.so"
+#   define EXAMPLE_LIB_PATH "./libexample.so"
 # endif
 
 static void example_plugin_test() {
-  auto plugin = load_plugin<DLClass::Test::Example>(EXAMPLE_LIB_PATH);
+  auto plugin = load_plugin<Example>(EXAMPLE_LIB_PATH);
 
   plugin->set_value(10);
   assert(plugin->get_value() == 10);
@@ -25,7 +25,7 @@ static void example_plugin_test() {
 }
 
 static void error_test() try {
-  auto plugin = load_plugin<DLClass::Test::Example>("404.dll");
+  auto plugin = load_plugin<Example>("404.dll");
   assert(plugin == nullptr);
 } catch (std::runtime_error &e) {
   auto message = std::string(e.what());
