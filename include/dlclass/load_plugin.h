@@ -6,10 +6,6 @@
 #include <memory>
 #include <stdexcept>
 
-#ifndef WIN32
-#include <dlfcn.h>
-#endif
-
 namespace DLClass {
   template<typename T, typename ...A>
   static std::shared_ptr<T> load_plugin(const std::string &path, A... args);
