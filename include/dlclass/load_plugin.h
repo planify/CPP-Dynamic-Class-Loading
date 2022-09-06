@@ -1,5 +1,5 @@
-#ifndef DLCLASS
-#define DLCLASS
+#ifndef DLCLASS_LOAD_PLUGIN_H
+#define DLCLASS_LOAD_PLUGIN_H
 
 #include <dlclass/slfcn.h>
 

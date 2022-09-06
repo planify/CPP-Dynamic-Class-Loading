@@ -1,5 +1,5 @@
-#ifndef SLFCN
-#define SLFCN
+#ifndef DLCLASS_SLFCN_H
+#define DLCLASS_SLFCN_H
 
 # if defined(WIN32) and not defined(_DLFCN_H) and not defined(DLFCN_H)
 #   include <windef.h>
