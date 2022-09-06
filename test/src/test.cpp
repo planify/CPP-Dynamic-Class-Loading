@@ -14,6 +14,8 @@
 #   define EXAMPLE_LIB_PATH "./libexample.so"
 # endif
 
+using namespace DLClass;
+
 static void example_plugin_test() {
   auto plugin = load_plugin<Example>(EXAMPLE_LIB_PATH);
 
