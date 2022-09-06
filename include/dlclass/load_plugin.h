@@ -1,59 +1,33 @@
 #pragma once
 
-// Allow the user to provide their own dlfcn implementation by including it before this file.
-#ifndef _DLFCN_H
-
-// There is no default implementation of dlfcn for Windows.
-#ifdef WIN32
-
-#include <windef.h>
-
-#include <errhandlingapi.h>
-#include <libloaderapi.h>
-#include <winbase.h>
-
-// For compatibility with dlopen, define only the macros actually used by this library.
-#define RTLD_LAZY 0x00001
-
-static const char *dlerror() {
-  LPVOID message_buffer;
-
-  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                reinterpret_cast<LPSTR>(&message_buffer), 0, nullptr);
-
-  const auto error = static_cast<char *>(message_buffer);
-
-  LocalFree(message_buffer);
-
-  return error;
-}
-
-static void *dlopen(const char *file, int) {
-  return LoadLibraryA(file);
-}
-
-static void *dlsym(void *handle, const char *name) {
-  return reinterpret_cast<void *>(GetProcAddress(static_cast<HMODULE>(handle), name));
-}
-
-static void dlclose(void *handle) {
-  FreeLibrary(reinterpret_cast<HMODULE>(handle));
-}
-
-#else
-#include <dlfcn.h>
-#endif
-
-#endif
-
 #include <memory>
 #include <stdexcept>
 
+// Allow the user to provide their own dlfcn implementation by including it before this file.
+# ifndef _DLFCN_H
+#   ifdef WIN32
+#     include <windef.h>
+#     include <errhandlingapi.h>
+#     include <libloaderapi.h>
+#     include <winbase.h>
+#   else
+#     include <dlfcn.h>
+#   endif
+# endif
+
 template<typename T, typename ...A>
 static std::shared_ptr<T> load_plugin(const std::string &path, A... args) {
+
+  // Provide a minimal implementation of dlfcn when not provided by the program using the library.
+# if defined(WIN32) and not defined(_DLFCN_H)
+#   define RTLD_LAZY 0x00001
+#   define dlopen(path, mode) (LoadLibraryA(path))
+#   define dlclose(handle) (FreeLibrary(reinterpret_cast<HMODULE>(handle)))
+#   define dlsym(handle, name) (reinterpret_cast<void *>(GetProcAddress(static_cast<HMODULE>(handle), name)))
+# else
   // Clear any existing errors from previous calls.
   dlerror();
+# endif
 
   // Load the library, resolving symbols only as their executed by the code.
   auto dlhandle = dlopen(path.c_str(), RTLD_LAZY);
@@ -70,8 +44,22 @@ static std::shared_ptr<T> load_plugin(const std::string &path, A... args) {
     // Clear the library's handle in case the exception is caught outside this function.
     dlhandle = nullptr;
 
+#ifdef WIN32
+    LPVOID message_buffer;
+
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                  nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  reinterpret_cast<LPSTR>(&message_buffer), 0, nullptr);
+
+    const auto error = static_cast<char *>(message_buffer);
+
+    LocalFree(message_buffer);
+
+    throw std::runtime_error{error};
+#else
     // Turn dlerror() into a runtime error.
     throw std::runtime_error{dlerror()};
+#endif
   };
 
   // Handle any errors resulting from loading the shared object.
