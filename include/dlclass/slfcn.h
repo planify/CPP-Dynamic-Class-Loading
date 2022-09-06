@@ -32,7 +32,7 @@ namespace DLClass {
 }
 
 static SL_HANDLE DLClass::slopen(const string &path) {
-#ifdef _DLFCN_H
+#if defined(DLFCN_H) or defined (_DLFCN_H)
   // Clear any existing errors from previous calls.
   slerror();
 
@@ -44,7 +44,7 @@ static SL_HANDLE DLClass::slopen(const string &path) {
 }
 
 static void DLClass::slclose(SL_HANDLE handle) {
-#ifdef _DLFCN_H
+#if defined(DLFCN_H) or defined (_DLFCN_H)
   // Clear any existing errors from previous calls.
   slerror();
 
@@ -57,7 +57,7 @@ static void DLClass::slclose(SL_HANDLE handle) {
 
 template<typename T>
 static T DLClass::slsym(SL_HANDLE handle, const string &name) {
-#ifdef _DLFCN_H
+#if defined(DLFCN_H) or defined (_DLFCN_H)
   // Clear any existing errors from previous calls.
   slerror();
 
@@ -69,7 +69,7 @@ static T DLClass::slsym(SL_HANDLE handle, const string &name) {
 }
 
 static const char *DLClass::slerror() {
-#ifdef _DLFCN_H
+#if defined(DLFCN_H) or defined (_DLFCN_H)
   return dlerror();
 #elif defined(WIN32)
   LPVOID message_buffer;
