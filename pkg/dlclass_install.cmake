@@ -17,16 +17,16 @@ set(PROJECT_INSTALL_SUBDIR ${PROJECT_NAME})
 set(PROJECT_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_INSTALL_SUBDIR}/cmake)
 
 # Add the install include directory to the library.
-target_include_directories(dlclass INTERFACE
+target_include_directories(${PROJECT_NAME} INTERFACE
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>/${PROJECT_INSTALL_SUBDIR})
 
 # Define the export target.
-install(TARGETS dlclass EXPORT ${PROJECT_TARGETS})
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_TARGETS})
 
 # Create the project's CMake version file.
 write_basic_package_version_file(${PROJECT_CONFIG_VERSION_FILE}
   VERSION
-  ${dlclass_VERSION}
+  ${PROJECT_VERSION}
 
   COMPATIBILITY
   SameMajorVersion)
@@ -45,7 +45,7 @@ install(EXPORT ${PROJECT_TARGETS}
   ${PROJECT_TARGETS_FILE}
 
   NAMESPACE
-  DLClass::
+  ${PROJECT_NAMESPACE}
 
   DESTINATION
   ${PROJECT_INSTALL_CMAKEDIR})
@@ -61,4 +61,4 @@ install(
 
 # Install the headers.
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(FILES ${PROJECT_SOURCE_DIR}/include/dlclass.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
