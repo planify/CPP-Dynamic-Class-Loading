@@ -8,7 +8,8 @@
 #include <dlclass/slfcn.h>
 
 template<typename T, typename ...A>
-static std::shared_ptr<T> DLClass::load_plugin(const std::string &path, A... args) {
+[[maybe_unused]] static std::shared_ptr<T>
+DLClass::load_plugin(const std::string &path, A... args) {
   // Load the library, resolving symbols only as they are executed by the code.
   auto slhandle = slopen(path);
 

@@ -3,19 +3,27 @@
 
 #include <string>
 
-# if defined(WIN32) and not defined(_DLFCN_H) and not defined(DLFCN_H)
-#   include <windef.h>
-#   include <errhandlingapi.h>
-#   include <libloaderapi.h>
-#   include <winbase.h>
+// Check for dlfcn implementation. DLFCN_H is used by dlfcn-win32, and _DLFCN_H by glibc. Default to using whatever
+// implementation is available before loading this file, use the glibc implementation on Linux, or LoadLibrary on
+// Windows.
+# if defined(DLFCN_H) or defined(_DLFCN_H)
+#   define DLFCN_PRESENT
 # else
-#   include <dlfcn.h>
+#   ifdef WIN32
+#     include <windef.h>
+#     include <errhandlingapi.h>
+#     include <libloaderapi.h>
+#     include <winbase.h>
+#   else
+#     include <dlfcn.h>
+#     define DLFCN_PRESENT
+#   endif
 # endif
 
 using std::string;
 
 static SL_HANDLE DLClass::slopen(const string &path) {
-#if defined(DLFCN_H) or defined (_DLFCN_H)
+#ifdef DLFCN_PRESENT
   // Clear any existing errors from previous calls.
   slerror();
 
@@ -27,7 +35,7 @@ static SL_HANDLE DLClass::slopen(const string &path) {
 }
 
 static void DLClass::slclose(SL_HANDLE handle) {
-#if defined(DLFCN_H) or defined (_DLFCN_H)
+#ifdef DLFCN_PRESENT
   // Clear any existing errors from previous calls.
   slerror();
 
@@ -40,7 +48,7 @@ static void DLClass::slclose(SL_HANDLE handle) {
 
 template<typename T>
 static T DLClass::slsym(SL_HANDLE handle, const string &name) {
-#if defined(DLFCN_H) or defined (_DLFCN_H)
+#ifdef DLFCN_PRESENT
   // Clear any existing errors from previous calls.
   slerror();
 
@@ -52,7 +60,7 @@ static T DLClass::slsym(SL_HANDLE handle, const string &name) {
 }
 
 static const char *DLClass::slerror() {
-#if defined(DLFCN_H) or defined (_DLFCN_H)
+#ifdef DLFCN_PRESENT
   return dlerror();
 #elif defined(WIN32)
   LPVOID message_buffer;
